@@ -79,11 +79,11 @@ public class mainActivity extends AppCompatActivity {
         bAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clientThread = new ClientThread();
-                thread = new Thread(clientThread);
-                thread.start();
-                dataString = etSubmitSong.toString();
-                clientThread.sendMessage(dataString);
+//                clientThread = new ClientThread();
+//                thread = new Thread(clientThread);
+//                thread.start();
+//                dataString = etSubmitSong.toString();
+//                clientThread.sendMessage(dataString);
             }
         });
     }
