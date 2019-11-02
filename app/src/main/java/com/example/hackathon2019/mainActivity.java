@@ -22,8 +22,11 @@ public class mainActivity extends AppCompatActivity {
     TableLayout tl;
     Button bAdd;
 
+    String IP = "10.27.248.205";
+    int Port = 53312;
+    SocketClass sock = new SocketClass(IP, Port);
+
     ArrayList<String> queue = new ArrayList<>();
-    SocketClass sock = new SocketClass();
 
 
     @Override
