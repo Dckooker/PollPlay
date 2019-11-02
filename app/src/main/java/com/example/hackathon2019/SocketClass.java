@@ -20,7 +20,7 @@ public class SocketClass {
         try {
             s = new Socket(IpAddress, Port);
             pw = new PrintWriter(s.getOutputStream());
-            pw.write("NewSong: " + songName);
+            pw.write("NewSong " + songName);
             pw.flush();
             pw.close();
             s.close();
@@ -34,7 +34,7 @@ public class SocketClass {
         try {
             s = new Socket(IpAddress, Port);
             pw = new PrintWriter(s.getOutputStream());
-            pw.write("NewVote: " + vote);
+            pw.write("NewVote " + vote);
             pw.flush();
             pw.close();
             s.close();
