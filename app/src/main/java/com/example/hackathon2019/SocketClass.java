@@ -3,13 +3,16 @@ package com.example.hackathon2019;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -22,6 +25,7 @@ public class SocketClass extends AsyncTask<String, Void, Void> {
     String IP = "10.27.253.101"; //Adam: 10.27.248.205 , me: 10.27.253.101
     int Port = 53312;
     Socket s;
+     Socket tempClientSocket;
 
 
 
@@ -34,6 +38,7 @@ public class SocketClass extends AsyncTask<String, Void, Void> {
             s = new Socket(IP, Port);
 
             out = new PrintWriter(s.getOutputStream());
+
             out.write(message);
             out.flush();
             out.close();
@@ -57,7 +62,32 @@ public class SocketClass extends AsyncTask<String, Void, Void> {
         } catch (IOException e) {e.printStackTrace();}
         return "NULL";
     }
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

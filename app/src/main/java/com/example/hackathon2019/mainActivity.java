@@ -2,19 +2,27 @@ package com.example.hackathon2019;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.os.Bundle;
-import android.view.Gravity;
+import android.os.Handler;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
+
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -25,6 +33,14 @@ public class mainActivity extends AppCompatActivity {
     Button bAdd;
     SocketClass socketclass = new SocketClass();
     ArrayList<String> queue = new ArrayList<>();
+    String dataString = "";
+
+    String IP = "10.27.253.101";
+    int PORT = 53312;
+    private ClientThread clientThread;
+    private Thread thread;
+
+    private Handler handler;
 
 
     @Override
@@ -32,6 +48,8 @@ public class mainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        handler = new Handler();
 
         etSubmitSong = findViewById(R.id.et_song);
         tl = findViewById(R.id.table);
@@ -57,10 +75,15 @@ public class mainActivity extends AppCompatActivity {
             }
         });
 
+        //add song button
         bAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketclass.execute(etSubmitSong.toString());
+                clientThread = new ClientThread();
+                thread = new Thread(clientThread);
+                thread.start();
+                dataString = etSubmitSong.toString();
+                clientThread.sendMessage(dataString);
             }
         });
     }
@@ -68,6 +91,7 @@ public class mainActivity extends AppCompatActivity {
     private void update() {
         while (true) {
             if (!socketclass.getData().equals("NULL")) {
+                clientThread = new ClientThread();
                 updateQueue(socketclass.getData());
             }
         }
@@ -104,7 +128,12 @@ public class mainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String send = "vote " + songName.getText() + " 1";
-                    socketclass.execute(send);
+                    clientThread = new ClientThread();
+                    thread = new Thread(clientThread);
+                    thread.start();
+                    dataString = send;
+                    clientThread.sendMessage(dataString);
+
 
                 }
             });
@@ -118,7 +147,11 @@ public class mainActivity extends AppCompatActivity {
                 String send = "vote " + songName.getText() + " -1";
                 @Override
                 public void onClick(View v) {
-                    socketclass.execute(send);;
+                    clientThread = new ClientThread();
+                    thread = new Thread(clientThread);
+                    thread.start();
+                    dataString = send;
+                    clientThread.sendMessage(dataString);
                 }
             });
 
@@ -165,6 +198,75 @@ public class mainActivity extends AppCompatActivity {
 
         return vote;
     }
+
+
+
+
+    class ClientThread implements Runnable {
+
+        private Socket socket;
+        private BufferedReader input;
+
+        @Override
+        public void run() {
+            try {
+                InetAddress serverAddr = InetAddress.getByName(IP);
+                socket = new Socket(serverAddr, PORT);
+
+
+                while (!Thread.currentThread().isInterrupted()) {
+
+                    this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String message = input.readLine();
+                    if (null == message || "Disconnect".contentEquals(message)) {
+                        Thread.interrupted();
+                        message = "Server Disconnected.";
+                       System.out.println(message);
+                        break;
+                    }
+                    System.out.println("Server: " + message);
+                }
+
+            } catch (UnknownHostException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+        }
+
+        void sendMessage(final String message) {
+            void sendMessage(final String message) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (null != socket) {
+                                PrintWriter out = new PrintWriter(new BufferedWriter(
+                                        new OutputStreamWriter(socket.getOutputStream())),
+                                        true);
+                                out.println(message);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (null != clientThread) {
+            clientThread.sendMessage("Disconnect");
+            clientThread = null;
+        }
+    }
+
 
 
 }
