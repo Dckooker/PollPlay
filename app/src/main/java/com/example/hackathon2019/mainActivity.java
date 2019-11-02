@@ -18,7 +18,9 @@ public class mainActivity extends AppCompatActivity {
 
     EditText submitSong;
     TableLayout tl;
-
+    String IP = "10.27.248.205";
+    int Port = 53312;
+    SocketClass socketClass =  new SocketClass(IP, Port);
     ArrayList<String> queue = new ArrayList<>();
 
 
