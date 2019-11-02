@@ -9,21 +9,36 @@ import java.net.Socket;
 
 public class SoccetClass {
 
-    Socket s;
+    Socket ss;
+    Socket sv;
     PrintWriter pw;
+    int
 
-
-
-    protected Void sendData(String message) {
+    protected Void sendSong(String message) {
 
         try {
-            s = new Socket("192.168.1.20", 5555);
+            ss = new Socket("192.168.1.20", 5555);
 
-            pw = new PrintWriter(s.getOutputStream());
+            pw = new PrintWriter(ss.getOutputStream());
             pw.write(message);
             pw.flush();
             pw.close();
-            s.close();
+            ss.close();
+
+        } catch (IOException e) { e.printStackTrace(); }
+        return null;
+    }
+
+    protected Void sendVotes(String message) {
+
+        try {
+            sv = new Socket("192.168.1.20", 5555);
+
+            pw = new PrintWriter(sv.getOutputStream());
+            pw.write(message);
+            pw.flush();
+            pw.close();
+            sv.close();
 
         } catch (IOException e) { e.printStackTrace(); }
         return null;
