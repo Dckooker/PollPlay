@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -13,13 +14,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class mainActivity extends AppCompatActivity {
 
-    EditText submitSong;
+    EditText etSubmitSong;
     TableLayout tl;
+    Button bAdd;
 
     ArrayList<String> queue = new ArrayList<>();
+    SocketClass sock = new SocketClass();
 
 
     @Override
@@ -28,37 +32,48 @@ public class mainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        submitSong = findViewById(R.id.et_song);
+        etSubmitSong = findViewById(R.id.et_song);
         tl = findViewById(R.id.table);
+        bAdd = findViewById(R.id.bt_add);
+
 
         queue.add("po_oppppppppppppppppppp 7");
         queue.add("pdsoop 4");
         queue.add("poods_p 123");
         queue.add("poosdp 0");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-//        queue.add("poop");
-
 
         addRows();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                update();
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        bAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sock.sendSong(etSubmitSong.toString());
+            }
+        });
+    }
+
+    private void update() {
+        while (true) {
+            if (!sock.getData().equals("NULL")) {
+                updateQueue(sock.getData());
+            }
+        }
     }
 
     private void addRows() {
+        tl.removeAllViews();
         for (int i = 0; i < queue.size(); i++) {
             // ROW
             TableRow tr = new TableRow(this);
@@ -66,7 +81,7 @@ public class mainActivity extends AppCompatActivity {
             tr.setBackground(getDrawable(R.drawable.cell_shape));
 
             // SONG NAME
-            TextView songName = new TextView(this);
+            final TextView songName = new TextView(this);
             songName.setText(getSongName(queue.get(i)));
             songName.setTextSize(15);
             songName.setTextColor(getResources().getColor(R.color.colorAccent));
@@ -84,13 +99,26 @@ public class mainActivity extends AppCompatActivity {
             up.setText("UP");
             up.setLayoutParams(new TableRow.LayoutParams(150, TableRow.LayoutParams.WRAP_CONTENT));
 
+            up.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String send = "vote " + songName + " 1";
+                    sock.sendVote(send);
+                }
+            });
+
+            // DOWN VOTE
             Button down = new Button(this);
             down.setText("DOWN");
             down.setLayoutParams(new TableRow.LayoutParams(180, TableRow.LayoutParams.WRAP_CONTENT));
 
-
-
-//            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+            down.setOnClickListener(new View.OnClickListener() {
+                String send = "vote " + songName + " -1";
+                @Override
+                public void onClick(View v) {
+                    sock.sendVote(send);
+                }
+            });
 
             tr.addView(songName);
             tr.addView(down);
@@ -100,6 +128,20 @@ public class mainActivity extends AppCompatActivity {
             tl.addView(tr);
         }
     }
+
+    private void updateQueue(String s) {
+        String[] songs = s.split(",");
+        ArrayList<String> arrListSongs = new ArrayList<>();
+
+        for (int i = 0; i <= songs.length; i++) {
+            arrListSongs.add(songs[i]);
+        }
+
+        Collections.copy(queue, arrListSongs);
+
+        addRows();
+    }
+
 
     private String getSongName(String string) {
         String[] strings = string.split(" ");
@@ -121,7 +163,6 @@ public class mainActivity extends AppCompatActivity {
 
         return vote;
     }
-
 
 
 }
