@@ -12,7 +12,6 @@ public class SoccetClass {
     Socket ss;
     Socket sv;
     PrintWriter pw;
-    int
 
     protected Void sendSong(String message) {
 
