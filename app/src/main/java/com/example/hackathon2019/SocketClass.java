@@ -20,21 +20,20 @@ public class SocketClass {
         try {
             s = new Socket(IpAddress, Port);
             pw = new PrintWriter(s.getOutputStream());
-            pw.write("NewSong " + songName);
+            pw.write("newsong " + songName);
             pw.flush();
             pw.close();
             s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     protected void sendVote(String vote) {
         try {
             s = new Socket(IpAddress, Port);
             pw = new PrintWriter(s.getOutputStream());
-            pw.write("NewVote " + vote);
+            pw.write("newvote " + vote);
             pw.flush();
             pw.close();
             s.close();
@@ -44,19 +43,28 @@ public class SocketClass {
 
     }
 
+    protected void removeSong(String songName) {
+        try {
+            s = new Socket(IpAddress, Port);
+            pw = new PrintWriter(s.getOutputStream());
+            pw.write("rsong " + songName);
+            pw.flush();
+            pw.close();
+            s.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected String getData() {
         try {
             s = new Socket();
             s.connect(new InetSocketAddress(IpAddress, Port), 1000);
-
             BufferedReader in;
             while (s.isConnected()) {
                 in = new BufferedReader(new InputStreamReader(s.getInputStream(), "UTF-8"));
-                //if (in.ready()) {
                 String msg = in.readLine();
-
                 return msg;
-                //}
             }
         } catch (IOException e) {
             e.printStackTrace();
