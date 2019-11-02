@@ -23,10 +23,7 @@ public class mainActivity extends AppCompatActivity {
     EditText etSubmitSong;
     TableLayout tl;
     Button bAdd;
-
-    public String ip = "10.27.248.205";
-    public int port = 53312;
-    SocketClass sock = new SocketClass();
+    SocketClass socketclass = new SocketClass();
     ArrayList<String> queue = new ArrayList<>();
 
 
@@ -36,22 +33,15 @@ public class mainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try{
-            sock.s = new Socket(ip, port);
-            System.out.println(" connected to setver ");
-        }catch(IOException e){
-            System.out.println(" failed to connect to server  ");
-        }
-
         etSubmitSong = findViewById(R.id.et_song);
         tl = findViewById(R.id.table);
         bAdd = findViewById(R.id.bt_add);
 
 
-        queue.add("po_oppppppppppppppppppp 7");
-        queue.add("pdsoop 4");
-        queue.add("poods_p 123");
-        queue.add("poosdp 0");
+        queue.add("song1 7");
+        queue.add("song2 4");
+        queue.add("song3 123");
+        queue.add("song4 0");
 
         addRows();
 
@@ -70,15 +60,15 @@ public class mainActivity extends AppCompatActivity {
         bAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sock.sendSong(etSubmitSong.toString());
+                socketclass.execute(etSubmitSong.toString());
             }
         });
     }
 
     private void update() {
         while (true) {
-            if (!sock.getData().equals("NULL")) {
-                updateQueue(sock.getData());
+            if (!socketclass.getData().equals("NULL")) {
+                updateQueue(socketclass.getData());
             }
         }
     }
@@ -113,8 +103,9 @@ public class mainActivity extends AppCompatActivity {
             up.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String send = "vote " + songName + " 1";
-                    sock.sendVote(send);
+                    String send = "vote " + songName.getText() + " 1";
+                    socketclass.execute(send);
+
                 }
             });
 
@@ -124,10 +115,10 @@ public class mainActivity extends AppCompatActivity {
             down.setLayoutParams(new TableRow.LayoutParams(180, TableRow.LayoutParams.WRAP_CONTENT));
 
             down.setOnClickListener(new View.OnClickListener() {
-                String send = "vote " + songName + " -1";
+                String send = "vote " + songName.getText() + " -1";
                 @Override
                 public void onClick(View v) {
-                    sock.sendVote(send);
+                    socketclass.execute(send);;
                 }
             });
 
