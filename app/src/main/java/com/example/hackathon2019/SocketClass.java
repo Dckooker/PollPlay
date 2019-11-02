@@ -11,18 +11,9 @@ import java.net.UnknownHostException;
 
 public class SocketClass {
 
-
-    public SocketClass(String IP, int Port ) {
-        try {
-            s = new Socket(IP, Port);
-            System.out.println("Connected");
-        } catch (IOException e) { System.out.print("failed to connect");}
-    }
-
+    private PrintWriter out;
+    private BufferedReader in = null;
     Socket s = null;
-    PrintWriter out;
-    BufferedReader in = null;
-
 
     protected void sendSong(String songName) {
         try {

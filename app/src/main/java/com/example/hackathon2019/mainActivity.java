@@ -13,6 +13,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -22,10 +24,9 @@ public class mainActivity extends AppCompatActivity {
     TableLayout tl;
     Button bAdd;
 
-    String IP = "10.27.248.205";
-    int Port = 53312;
-    SocketClass sock = new SocketClass(IP, Port);
-
+    public String ip = "10.27.248.205";
+    public int port = 53312;
+    SocketClass sock = new SocketClass();
     ArrayList<String> queue = new ArrayList<>();
 
 
@@ -34,6 +35,13 @@ public class mainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try{
+            sock.s = new Socket(ip, port);
+            System.out.println(" connected to setver ");
+        }catch(IOException e){
+            System.out.println(" failed to connect to server  ");
+        }
 
         etSubmitSong = findViewById(R.id.et_song);
         tl = findViewById(R.id.table);
