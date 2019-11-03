@@ -61,6 +61,8 @@ public class mainActivity extends AppCompatActivity {
                 (new Thread(new ConnectActivity.sendDataThread("song " + etSubmitSong.getText().toString()))).start();
             }
         });
+
+//        (new Thread(new ConnectActivity.waitForResponseThread())).start();
     }
 
     private void addRows() {
