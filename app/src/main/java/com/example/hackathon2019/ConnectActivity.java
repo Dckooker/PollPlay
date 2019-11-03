@@ -1,6 +1,7 @@
 package com.example.hackathon2019;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,19 +16,13 @@ import java.net.Socket;
 
 import static java.lang.Thread.sleep;
 
-public class ConnectActivity extends AppCompatActivity {
+public class ConnectActivity {
 
-    private Socket s = null;
-    private String IP = "";
-    private int PORT = 0;
+    private static Socket s = null;
+    private String IP = "10.27.248.205";//"10.27.254.160";
+    private int PORT = 53312;
 
-    private boolean firstTime = true;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-
+    public ConnectActivity(String name) {
         startConnection();
 
         try {
@@ -36,9 +31,9 @@ public class ConnectActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        (new Thread(new sendDataThread("balls"))).start();
+        //(new Thread(new sendDataThread("balls"))).start();
 
-        waitForResponseThead res = new waitForResponseThead();
+        waitForResponseThread res = new waitForResponseThread();
         (new Thread(res)).start();
 
         try {
@@ -46,6 +41,10 @@ public class ConnectActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Log.i("pitest", "Connected to server");
+
+        (new Thread(new sendDataThread("name " + name))).start();
     }
 
     public class connectThread implements Runnable {
@@ -66,7 +65,7 @@ public class ConnectActivity extends AppCompatActivity {
         }
     }
 
-    public class sendDataThread implements Runnable {
+    public static class sendDataThread implements Runnable {
         private String data;
         public sendDataThread(String data) {
             this.data = data;
@@ -74,11 +73,16 @@ public class ConnectActivity extends AppCompatActivity {
 
         @Override
         public void run() {
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             sendData(data);
         }
     }
 
-    public boolean sendData(String data) {
+    public static boolean sendData(String data) {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())));
             out.println(data);
@@ -90,7 +94,7 @@ public class ConnectActivity extends AppCompatActivity {
         return false;
     }
 
-    public class waitForResponseThead implements Runnable {
+    public class waitForResponseThread implements Runnable {
         String res = "NULL";
         @Override
         public void run() {
@@ -120,7 +124,5 @@ public class ConnectActivity extends AppCompatActivity {
     public void startConnection() {
         (new Thread(new connectThread())).start();
     }
-
-
 
 }
